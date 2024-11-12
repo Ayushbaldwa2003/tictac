@@ -105,10 +105,10 @@ wsServer.on("request", (request) => {
           };
           chance = chance === "X" ? "O" : "X";
           game.clients.forEach((c) => {
-            const payload = {
-              method: "yourturn",
-            };
-            clients[c.clientId].connection.send(JSON.stringify(payload));
+            // const payload = {
+            //   method: "yourturn",
+            // };
+            // clients[c.clientId].connection.send(JSON.stringify(payload));
             clients[c.clientId].connection.send(JSON.stringify(payLoad));
           });
         }

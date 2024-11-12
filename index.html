@@ -9,44 +9,58 @@
   </head>
   <body>
     <div id="gameContainer">
-        <!-- Header Message -->
-        <h2 id="statusMessage">Welcome to Tic-Tac-Toe</h2>
-  
-        <!-- Create/Join Game Section -->
-        <div id="setupContainer">
+      <!-- Header Message -->
+      <h2 id="statusMessage">Welcome to Tic-Tac-Toe</h2>
+
+      <!-- Create/Join Game Section -->
+      <div id="setupContainer">
+        <div id="createGameContainer">
           <button id="createGameBtn">Create Game</button>
-          <input type="text" id="txtGameId" placeholder="Enter Game code" />
-          <button id="joinGameBtn">Join Game</button>
-          <h3 id="gameCodeDisplay" style="display: none">
-            Game Code: <span id="gameCode"></span>
-          </h3>
         </div>
-  
-        <!-- Turn Indicator (Above Game Board) -->
-        <h3 id="turnIndicator" style="display: none">It's your turn!</h3>
-        <h3 id="turnIndicator1" style="display: none">Player:O</h3>
-        <h3 id="turnIndicator2" style="display: none">Player:X</h3>
-        <!-- Tic-Tac-Toe Board -->
-        <div id="gameBoard" style="display: none">
-          <div class="box" id="box1"></div>
-          <div class="box" id="box2"></div>
-          <div class="box" id="box3"></div>
-          <div class="box" id="box4"></div>
-          <div class="box" id="box5"></div>
-          <div class="box" id="box6"></div>
-          <div class="box" id="box7"></div>
-          <div class="box" id="box8"></div>
-          <div class="box" id="box9"></div>
+
+        <div id="joinGameContainer">
+          <input
+            type="text"
+            id="txtGameId"
+            placeholder="Enter Game Code"
+            style="display: block"
+          />
+          <button id="joinGameBtn" style="display: block">Join Game</button>
         </div>
-  
-        <!-- Winner Display (Below Game Board) -->
-        <h3 id="winnercodedisplay" style="display: none">
-          <span id="winner"></span>
+
+        <h3 id="waiting" style="display: none">Waiting for the other player....</h3>
+
+        <h3 id="gameCodeDisplay" style="display: none">
+          Game Code: <span id="gameCode"></span>
         </h3>
-  
-        <!-- New Game Button -->
-        <button id="newGameBtn" style="display: none">New Game</button>
       </div>
+
+      <!-- Turn Indicator (Above Game Board) -->
+      <h3 id="turnIndicator" style="display: none">It's your turn!</h3>
+      <h3 id="turnIndicator1" style="display: none">Player: O</h3>
+      <h3 id="turnIndicator2" style="display: none">Player: X</h3>
+
+      <!-- Tic-Tac-Toe Board -->
+      <div id="gameBoard" style="display: none">
+        <div class="box" id="box1"></div>
+        <div class="box" id="box2"></div>
+        <div class="box" id="box3"></div>
+        <div class="box" id="box4"></div>
+        <div class="box" id="box5"></div>
+        <div class="box" id="box6"></div>
+        <div class="box" id="box7"></div>
+        <div class="box" id="box8"></div>
+        <div class="box" id="box9"></div>
+      </div>
+
+      <!-- Winner Display (Below Game Board) -->
+      <h3 id="winnercodedisplay" style="display: none">
+        <span id="winner"></span>
+      </h3>
+
+      <!-- New Game Button -->
+      <button id="newGameBtn" style="display: none">New Game</button>
+    </div>
 
     <script>
       const wsUrl =
@@ -62,9 +76,10 @@
       const joinbtn = document.getElementById("joinGameBtn");
       const newGameBtn = document.getElementById("newGameBtn");
       const txtGameId = document.getElementById("txtGameId");
+      const waiting =document.getElementById("waiting");
       let clienId = null;
       let gameId = null;
-      let count=0;
+      let count = 0;
       document
         .getElementById("newGameBtn")
         .addEventListener("click", resetGame);
@@ -75,6 +90,10 @@
         };
 
         ws.send(JSON.stringify(payLoad));
+        joinbtn.style.display = "none";
+        txtGameId.style.display = "none";
+        createbtn.style.display = "none";
+        waiting.style.display ="block";
       });
       joinbtn.addEventListener("click", () => {
         let gamecode = txtGameId.value;
@@ -122,18 +141,18 @@
           document.getElementById("setupContainer").style.display = "none";
           document.getElementById("gameBoard").style.display = "grid";
         }
-        if(response.method === "showsymbol"){
+        if (response.method === "showsymbol") {
           console.log(response.symbol);
-           if(response.symbol=== "O"){
+          if (response.symbol === "O") {
             turnIndicator1.style.display = "block";
-           }else{
+          } else {
             turnIndicator2.style.display = "block";
-           }
+          }
         }
         if (response.method === "yourturn") {
-            toggleTurnIndicator();
+          toggleTurnIndicator();
         }
-        if(response.method === "resetgame"){
+        if (response.method === "resetgame") {
           resetGame2();
         }
 
@@ -145,10 +164,12 @@
           count++;
           if (checkwinner()) {
             showwinner(temp);
-          }else{
-              if(count===9){
-                showdraw();
-              }
+          } else {
+            if (count === 9) {
+              showdraw();
+            }else{
+              toggleTurnIndicator();
+            }
           }
         }
       };
@@ -158,25 +179,24 @@
           turnIndicator.style.display === "none" ||
           turnIndicator.style.display === ""
         ) {
-          turnIndicator.style.display = "block"; 
+          turnIndicator.style.display = "block";
         } else {
-          turnIndicator.style.display = "none"; 
+          turnIndicator.style.display = "none";
         }
       }
 
       function resetGame() {
-        payLoad={
+        payLoad = {
           method: "resetgame",
           game: gameId,
-        }
+        };
         ws.send(JSON.stringify(payLoad));
         for (let i = 1; i <= 9; i++) {
           document.getElementById("box" + i).textContent = "";
         }
         document.getElementById("winner").innerText = "";
-        count=0;
+        count = 0;
       }
-
 
       function resetGame2() {
         for (let i = 1; i <= 9; i++) {
@@ -184,7 +204,7 @@
         }
         document.getElementById("newGameBtn").style.display = "none";
         document.getElementById("winner").innerText = "";
-        count=0;
+        count = 0;
       }
 
       function showwinner(temp) {

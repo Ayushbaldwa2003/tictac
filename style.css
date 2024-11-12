@@ -58,9 +58,9 @@ html, body {
 #winnercodedisplay {
     margin-top: 15px;
     font-size: 1.3rem;
-    color: #f13c20;
+    color: #3bd688;
     font-weight: bold;
-    text-shadow: 0 0 10px #f13c20;
+    text-shadow: 0 0 10px #3bd688;
 }
 
 #gameBoard {
@@ -193,4 +193,51 @@ button:hover {
     #newGameBtn {
         padding: 12px 20px;
     }
+}
+
+
+
+
+#setupContainer {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#createGameContainer,
+#joinGameContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Styles for input field */
+#txtGameId {
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #45a29e;
+    border-radius: 5px;
+    background-color: #1f2833;
+    color: #c5c6c7;
+}
+
+/* Styles for join and create buttons */
+button {
+    padding: 10px 15px;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: #66fcf1;
+    color: #0b0c10;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(102, 252, 241, 0.5);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #45a29e;
+    box-shadow: 0 0 20px rgba(102, 252, 241, 0.8);
+    transform: scale(1.05);
 }
