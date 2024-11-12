@@ -110,20 +110,21 @@
         }
       });
 
-      for (let i = 1; i <= 9; i++) {
-        const box = document.getElementById("box" + i);
-        box.addEventListener("click", () => {
-          if (box.innerText === "") {
-            const payLoad = {
-              method: "play",
-              clientId: clientId,
-              gameId: gameId,
-              box: box.id,
-            };
-            ws.send(JSON.stringify(payLoad));
-          }
-        });
-      }
+    
+      // for (let i = 1; i <= 9; i++) {
+      //   const box = document.getElementById("box" + i);
+      //   box.addEventListener("click", () => {
+      //     if (box.innerText === "") {
+      //       const payLoad = {
+      //         method: "play",
+      //         clientId: clientId,
+      //         gameId: gameId,
+      //         box: box.id,
+      //       };
+      //       ws.send(JSON.stringify(payLoad));
+      //     }
+      //   });
+      // }
 
       ws.onmessage = (message) => {
         const response = JSON.parse(message.data);
@@ -138,6 +139,7 @@
         }
 
         if (response.method === "join") {
+          addBoxListeners();
           document.getElementById("setupContainer").style.display = "none";
           document.getElementById("gameBoard").style.display = "grid";
         }
@@ -204,15 +206,19 @@
         }
         document.getElementById("newGameBtn").style.display = "none";
         document.getElementById("winner").innerText = "";
+        addBoxListeners();
+        toggleTurnIndicator();
         count = 0;
       }
 
       function showwinner(temp) {
+        removeBoxListeners();
         document.getElementById("winner").innerText = `winner is ${temp}`;
         document.getElementById("winnercodedisplay").style.display = "block";
         document.getElementById("newGameBtn").style.display = "block";
       }
       function showdraw(temp) {
+        removeBoxListeners();
         document.getElementById("winner").innerText = `It's draw`;
         document.getElementById("winnercodedisplay").style.display = "block";
         document.getElementById("newGameBtn").style.display = "block";
@@ -242,6 +248,44 @@
 
         return false;
       }
+
+
+
+
+
+
+
+
+
+
+      function handleBoxClick(event) {
+    const box = event.target;
+    if (box.innerText === "") {
+        const payLoad = {
+            method: "play",
+            clientId: clientId,
+            gameId: gameId,
+            box: box.id,
+        };
+        ws.send(JSON.stringify(payLoad));
+    }
+}
+
+function addBoxListeners() {
+    for (let i = 1; i <= 9; i++) {
+        const box = document.getElementById("box" + i);
+        box.addEventListener("click", handleBoxClick);
+    }
+}
+
+function removeBoxListeners() {
+    for (let i = 1; i <= 9; i++) {
+        const box = document.getElementById("box" + i);
+        box.removeEventListener("click", handleBoxClick);
+    }
+}
+
+
     </script>
   </body>
 </html>
