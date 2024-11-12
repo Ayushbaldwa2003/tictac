@@ -65,7 +65,14 @@ wsServer.on("request", (request) => {
           game: game,
         };
         game.clients.forEach((c) => {
+          console.log("hi");
           clients[c.clientId].connection.send(JSON.stringify(payLoad));
+          if(c.Symbol===chance){
+            const payload={
+                method: "yourturn"
+            }
+            clients[c.clientId].connection.send(JSON.stringify(payload));
+          }
         });
       }
     }
@@ -82,6 +89,10 @@ wsServer.on("request", (request) => {
           };
           chance = chance === "X" ? "O" : "X";
           game.clients.forEach((c) => {
+            const payload={
+                method: "yourturn"
+            }
+            clients[c.clientId].connection.send(JSON.stringify(payload));
             clients[c.clientId].connection.send(JSON.stringify(payLoad));
           });
         }

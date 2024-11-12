@@ -9,49 +9,59 @@
   </head>
   <body>
     <div id="gameContainer">
-      <!-- Header Message -->
-      <h2 id="statusMessage">Welcome to Tic-Tac-Toe</h2>
-
-      <!-- Create/Join Game Section -->
-      <div id="setupContainer">
-        <button id="createGameBtn">Create Game</button>
-        <input type="text" id="txtGameId" placeholder="Enter Game code" />
-        <button id="joinGameBtn">Join Game</button>
-        <h3 id="gameCodeDisplay" style="display: none">
-          Game Code: <span id="gameCode"></span>
-        </h3>
-      </div>
-
-      <!-- Tic-Tac-Toe Board -->
-      <div id="gameBoard" style="display: none">
-        <div class="box" id="box1"></div>
-        <div class="box" id="box2"></div>
-        <div class="box" id="box3"></div>
-        <div class="box" id="box4"></div>
-        <div class="box" id="box5"></div>
-        <div class="box" id="box6"></div>
-        <div class="box" id="box7"></div>
-        <div class="box" id="box8"></div>
-        <div class="box" id="box9"></div>
+        <!-- Header Message -->
+        <h2 id="statusMessage">Welcome to Tic-Tac-Toe</h2>
+  
+        <!-- Create/Join Game Section -->
+        <div id="setupContainer">
+          <button id="createGameBtn">Create Game</button>
+          <input type="text" id="txtGameId" placeholder="Enter Game code" />
+          <button id="joinGameBtn">Join Game</button>
+          <h3 id="gameCodeDisplay" style="display: none">
+            Game Code: <span id="gameCode"></span>
+          </h3>
+        </div>
+  
+        <!-- Turn Indicator (Above Game Board) -->
+        <h3 id="turnIndicator" style="display: none">It's your turn!</h3>
+  
+        <!-- Tic-Tac-Toe Board -->
+        <div id="gameBoard" style="display: none">
+          <div class="box" id="box1"></div>
+          <div class="box" id="box2"></div>
+          <div class="box" id="box3"></div>
+          <div class="box" id="box4"></div>
+          <div class="box" id="box5"></div>
+          <div class="box" id="box6"></div>
+          <div class="box" id="box7"></div>
+          <div class="box" id="box8"></div>
+          <div class="box" id="box9"></div>
+        </div>
+  
+        <!-- Winner Display (Below Game Board) -->
         <h3 id="winnercodedisplay" style="display: none">
-          Winner : <span id="winner"></span>
+          <span id="winner"></span>
         </h3>
+  
+        <!-- New Game Button -->
+        <button id="newGameBtn" style="display: none">New Game</button>
       </div>
-
-      <!-- New Game Button -->
-      <button id="newGameBtn" style="display: none">New Game</button>
-    </div>
 
     <script>
-     const wsUrl = window.location.hostname === "localhost" ? 'ws://localhost:3000' : 'wss://tictac-7mgq.onrender.com';
-     const ws = new WebSocket(wsUrl);
+      const wsUrl =
+        window.location.hostname === "localhost"
+          ? "ws://localhost:3000"
+          : "wss://tictac-7mgq.onrender.com";
+      const ws = new WebSocket(wsUrl);
 
+      const turnIndicator = document.getElementById("turnIndicator");
       const createbtn = document.getElementById("createGameBtn");
       const joinbtn = document.getElementById("joinGameBtn");
       const newGameBtn = document.getElementById("newGameBtn");
       const txtGameId = document.getElementById("txtGameId");
       let clienId = null;
       let gameId = null;
+      let count=0;
       document
         .getElementById("newGameBtn")
         .addEventListener("click", resetGame);
@@ -81,14 +91,14 @@
       for (let i = 1; i <= 9; i++) {
         const box = document.getElementById("box" + i);
         box.addEventListener("click", () => {
-          if(box.innerText===""){
+          if (box.innerText === "") {
             const payLoad = {
-            method: "play",
-            clientId: clientId,
-            gameId: gameId,
-            box: box.id,
-          };
-          ws.send(JSON.stringify(payLoad));
+              method: "play",
+              clientId: clientId,
+              gameId: gameId,
+              box: box.id,
+            };
+            ws.send(JSON.stringify(payLoad));
           }
         });
       }
@@ -108,7 +118,10 @@
         if (response.method === "join") {
           document.getElementById("setupContainer").style.display = "none";
           document.getElementById("gameBoard").style.display = "grid";
-          document.getElementById("newGameBtn").style.display = "block";
+        }
+
+        if (response.method === "yourturn") {
+            toggleTurnIndicator();
         }
 
         if (response.method === "update") {
@@ -116,21 +129,45 @@
           const box = document.getElementById(boxx);
           const temp = response.symbol;
           box.textContent = temp;
+          count++;
           if (checkwinner()) {
             showwinner(temp);
+          }else{
+              if(count===9){
+                showdraw();
+              }
           }
         }
       };
+
+      function toggleTurnIndicator() {
+        if (
+          turnIndicator.style.display === "none" ||
+          turnIndicator.style.display === ""
+        ) {
+          turnIndicator.style.display = "block"; 
+        } else {
+          turnIndicator.style.display = "none"; 
+        }
+      }
 
       function resetGame() {
         for (let i = 1; i <= 9; i++) {
           document.getElementById("box" + i).textContent = "";
         }
+        document.getElementById("winner").innerText = "";
+        count=0;
       }
 
       function showwinner(temp) {
-        document.getElementById("winner").innerText = temp;
+        document.getElementById("winner").innerText = `winner is ${temp}`;
         document.getElementById("winnercodedisplay").style.display = "block";
+        document.getElementById("newGameBtn").style.display = "block";
+      }
+      function showdraw(temp) {
+        document.getElementById("winner").innerText = `It's draw`;
+        document.getElementById("winnercodedisplay").style.display = "block";
+        document.getElementById("newGameBtn").style.display = "block";
       }
 
       function checkwinner() {
