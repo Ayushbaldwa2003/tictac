@@ -4,120 +4,193 @@
     box-sizing: border-box;
 }
 
-body {
+html, body {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
     font-family: 'Roboto', sans-serif;
-    background-color: #121212;
-    color: #ffffff;
+    background-color: #0b0c10;
+    color: #c5c6c7;
     overflow: hidden;
 }
 
 #gameContainer {
     text-align: center;
-    background: linear-gradient(45deg, #1d1f21, #2a2d33);
+    background: linear-gradient(145deg, #1f2833, #0b0c10);
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0px 0px 30px rgba(0, 255, 255, 0.2);
+    box-shadow: 0px 0px 25px rgba(38, 198, 218, 0.3);
+    max-height: 100vh;
+    overflow: hidden;
+    width: 90vw;
+    max-width: 500px;
 }
 
 #statusMessage {
-    margin-bottom: 20px;
-    font-size: 2rem;
-    color: #00ff99; /* Neon green */
-    text-shadow: 0 0 15px #00ff99;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+    color: #66fcf1;
+    text-shadow: 0 0 15px #66fcf1;
 }
 
 #setupContainer {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 #playerName {
     padding: 8px;
     font-size: 1rem;
+    border: 1px solid #45a29e;
+    border-radius: 5px;
+    background-color: #1f2833;
+    color: #c5c6c7;
 }
 
-#turnIndicator {
-    margin-bottom: 15px;
-    font-size: 1.5rem;
-    color: #ff4081; /* Neon pink */
+#turnIndicator, #turnIndicator1, #turnIndicator2 {
+    margin-bottom: 12px;
+    font-size: 1.4rem;
+    color: #66fcf1;
     font-weight: bold;
-    text-shadow: 0 0 20px #ff4081;
+    text-shadow: 0 0 10px #66fcf1;
 }
 
 #winnercodedisplay {
     margin-top: 15px;
-    font-size: 1.5rem;
-    color: #ff5722; /* Neon orange */
+    font-size: 1.3rem;
+    color: #f13c20;
     font-weight: bold;
-    text-shadow: 0 0 20px #ff5722;
+    text-shadow: 0 0 10px #f13c20;
 }
 
 #gameBoard {
     display: grid;
-    grid-template-columns: repeat(3, 120px);
-    gap: 10px;
+    grid-template-columns: repeat(3, 100px);
+    gap: 8px;
     margin: 20px 0;
+    justify-content: center;
 }
 
 .box {
-    width: 120px;
-    height: 120px;
-    background-color: #333;
-    border: 2px solid #00ff99; /* Neon green border */
+    width: 100px;
+    height: 100px;
+    background-color: #1f2833;
+    border: 2px solid #66fcf1;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5rem;
-    color: #ffffff;
+    font-size: 2.2rem;
+    color: #c5c6c7;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .box:hover {
-    background-color: rgba(0, 255, 255, 0.2);
+    background-color: #45a29e;
+    transform: scale(1.05);
 }
 
 button {
     padding: 10px 15px;
     font-size: 1rem;
     cursor: pointer;
-    background-color: #ff4081; /* Neon pink */
-    color: #ffffff;
+    background-color: #66fcf1;
+    color: #0b0c10;
     border: none;
     border-radius: 5px;
-    box-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
-    transition: background-color 0.3s ease;
+    box-shadow: 0 0 10px rgba(102, 252, 241, 0.5);
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-    background-color: #ff80ab; /* Slightly lighter pink */
-    box-shadow: 0 0 20px rgba(255, 64, 129, 0.8);
+    background-color: #45a29e;
+    box-shadow: 0 0 20px rgba(102, 252, 241, 0.8);
+    transform: scale(1.05);
 }
 
 #newGameBtn {
     margin-top: 20px;
     font-size: 1.2rem;
-    background-color: #00ff99; /* Neon green */
-    color: #121212;
+    background-color: #45a29e;
+    color: #0b0c10;
     border: none;
     border-radius: 5px;
-    padding: 15px 30px;
+    padding: 12px 24px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 #newGameBtn:hover {
-    background-color: #00e676;
+    background-color: #66fcf1;
+    transform: scale(1.05);
 }
 
 #gameCodeDisplay {
     font-size: 1.2rem;
-    color: #ff5722;
+    color: #f13c20;
 }
 
 #gameCode {
     font-weight: bold;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    #gameBoard {
+        grid-template-columns: repeat(3, 80px);
+        gap: 6px;
+    }
+    
+    .box {
+        width: 80px;
+        height: 80px;
+        font-size: 1.8rem;
+    }
+
+    #statusMessage {
+        font-size: 1.6rem;
+    }
+
+    #turnIndicator, #turnIndicator1, #turnIndicator2 {
+        font-size: 1.2rem;
+    }
+
+    #winnercodedisplay {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #gameContainer {
+        padding: 20px;
+    }
+
+    #statusMessage {
+        font-size: 1.4rem;
+    }
+
+    #turnIndicator, #turnIndicator1, #turnIndicator2,
+    #winnercodedisplay {
+        font-size: 1rem;
+    }
+
+    #gameBoard {
+        grid-template-columns: repeat(3, 60px);
+        gap: 5px;
+    }
+
+    .box {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
+    button, #newGameBtn {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+
+    #newGameBtn {
+        padding: 12px 20px;
+    }
 }

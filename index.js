@@ -1,7 +1,7 @@
 const http = require("http");
 const express = require("express");
 const WebSocketServer = require("websocket").server;
-const path = require("path");  // Import path to resolve static files
+const path = require("path"); // Import path to resolve static files
 
 const app = express();
 const server = http.createServer(app);
@@ -19,8 +19,8 @@ if (Math.floor(Math.random() * 2) === 1) {
 app.use(express.static(__dirname));
 
 // Serve the main page (index.html) for the root URL
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 wsServer.on("request", (request) => {
@@ -50,6 +50,18 @@ wsServer.on("request", (request) => {
       con.send(JSON.stringify(payLoad));
     }
 
+    if(result.method == "resetgame"){
+      const gameId = result.game;
+      const game = games[gameId];
+      const payload={
+        method: "resetgame",
+      }
+      game.clients.forEach((c) => {
+        console.log("hi");
+        clients[c.clientId].connection.send(JSON.stringify(payload));
+      });
+    }
+
     if (result.method == "join") {
       const clientId = result.clientId;
       const gameId = result.gameId;
@@ -65,12 +77,16 @@ wsServer.on("request", (request) => {
           game: game,
         };
         game.clients.forEach((c) => {
-          console.log("hi");
+          const payload1 = {
+            method: "showsymbol",
+            symbol: c.Symbol,
+          };
           clients[c.clientId].connection.send(JSON.stringify(payLoad));
-          if(c.Symbol===chance){
-            const payload={
-                method: "yourturn"
-            }
+          clients[c.clientId].connection.send(JSON.stringify(payload1));
+          if (c.Symbol === chance) {
+            const payload = {
+              method: "yourturn",
+            };
             clients[c.clientId].connection.send(JSON.stringify(payload));
           }
         });
@@ -89,9 +105,9 @@ wsServer.on("request", (request) => {
           };
           chance = chance === "X" ? "O" : "X";
           game.clients.forEach((c) => {
-            const payload={
-                method: "yourturn"
-            }
+            const payload = {
+              method: "yourturn",
+            };
             clients[c.clientId].connection.send(JSON.stringify(payload));
             clients[c.clientId].connection.send(JSON.stringify(payLoad));
           });
@@ -127,7 +143,6 @@ const guid = () =>
     S4()
   ).toLowerCase();
 
-
-  server.listen(process.env.PORT || 3000, () => {
-    console.log("Server running on http://localhost:3000");
-  }); 
+server.listen(process.env.PORT || 3000, () => {
+  console.log("Server running on http://localhost:3000");
+});

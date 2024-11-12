@@ -24,7 +24,8 @@
   
         <!-- Turn Indicator (Above Game Board) -->
         <h3 id="turnIndicator" style="display: none">It's your turn!</h3>
-  
+        <h3 id="turnIndicator1" style="display: none">Player:O</h3>
+        <h3 id="turnIndicator2" style="display: none">Player:X</h3>
         <!-- Tic-Tac-Toe Board -->
         <div id="gameBoard" style="display: none">
           <div class="box" id="box1"></div>
@@ -55,6 +56,8 @@
       const ws = new WebSocket(wsUrl);
 
       const turnIndicator = document.getElementById("turnIndicator");
+      const turnIndicator1 = document.getElementById("turnIndicator1");
+      const turnIndicator2 = document.getElementById("turnIndicator2");
       const createbtn = document.getElementById("createGameBtn");
       const joinbtn = document.getElementById("joinGameBtn");
       const newGameBtn = document.getElementById("newGameBtn");
@@ -119,9 +122,19 @@
           document.getElementById("setupContainer").style.display = "none";
           document.getElementById("gameBoard").style.display = "grid";
         }
-
+        if(response.method === "showsymbol"){
+          console.log(response.symbol);
+           if(response.symbol=== "O"){
+            turnIndicator1.style.display = "block";
+           }else{
+            turnIndicator2.style.display = "block";
+           }
+        }
         if (response.method === "yourturn") {
             toggleTurnIndicator();
+        }
+        if(response.method === "resetgame"){
+          resetGame2();
         }
 
         if (response.method === "update") {
@@ -152,9 +165,24 @@
       }
 
       function resetGame() {
+        payLoad={
+          method: "resetgame",
+          game: gameId,
+        }
+        ws.send(JSON.stringify(payLoad));
         for (let i = 1; i <= 9; i++) {
           document.getElementById("box" + i).textContent = "";
         }
+        document.getElementById("winner").innerText = "";
+        count=0;
+      }
+
+
+      function resetGame2() {
+        for (let i = 1; i <= 9; i++) {
+          document.getElementById("box" + i).textContent = "";
+        }
+        document.getElementById("newGameBtn").style.display = "none";
         document.getElementById("winner").innerText = "";
         count=0;
       }
