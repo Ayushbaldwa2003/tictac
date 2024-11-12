@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tic-Tac-Toe Multiplayer</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="data:," />
   </head>
   <body>
     <div id="gameContainer">
@@ -42,7 +43,8 @@
     </div>
 
     <script>
-      let ws = new WebSocket("ws://localhost:9090");
+     const wsUrl = window.location.hostname === "localhost" ? 'ws://localhost:3000' : 'wss://tictac-7mgq.onrender.com';
+     const ws = new WebSocket(wsUrl);
 
       const createbtn = document.getElementById("createGameBtn");
       const joinbtn = document.getElementById("joinGameBtn");
@@ -50,7 +52,9 @@
       const txtGameId = document.getElementById("txtGameId");
       let clienId = null;
       let gameId = null;
-      document.getElementById('newGameBtn').addEventListener('click', resetGame);
+      document
+        .getElementById("newGameBtn")
+        .addEventListener("click", resetGame);
       createbtn.addEventListener("click", () => {
         const payLoad = {
           method: "create",

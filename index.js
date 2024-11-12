@@ -1,22 +1,26 @@
 const http = require("http");
 const express = require("express");
-const app = express();
-app.get("/", (req, res) => res.sendFile(__dirname + "/index.html"));
+const WebSocketServer = require("websocket").server;
+const path = require("path");  // Import path to resolve static files
 
-app.listen(9091, () => console.log("Listening on http port 9091"));
-app.use(express.static(__dirname));
-const websocketServer = require("websocket").server;
-const httpServer = http.createServer();
-httpServer.listen(9090, () => console.log("Listening.. on 9090"));
+const app = express();
+const server = http.createServer(app);
+const wsServer = new WebSocketServer({
+  httpServer: server,
+});
+
 const clients = {};
 const games = {};
 let chance = "X";
-if (Math.floor(Math.random() * 2) == 1) {
+if (Math.floor(Math.random() * 2) === 1) {
   chance = "O";
 }
 
-const wsServer = new websocketServer({
-  httpServer: httpServer,
+app.use(express.static(__dirname));
+
+// Serve the main page (index.html) for the root URL
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 wsServer.on("request", (request) => {
@@ -66,12 +70,10 @@ wsServer.on("request", (request) => {
       }
     }
 
-
     if (result.method === "play") {
       const game = games[result.gameId];
       const clientId = result.clientId;
       game.clients.forEach((c) => {
-        console.log(c.clientId);
         if (c.clientId === clientId && c.Symbol === chance) {
           const payLoad = {
             method: "update",
@@ -88,9 +90,7 @@ wsServer.on("request", (request) => {
   });
 
   const clientId = guid();
-  clients[clientId] = {
-    connection: connection,
-  };
+  clients[clientId] = { connection };
 
   const payLoad = {
     method: "connect",
@@ -112,8 +112,11 @@ const guid = () =>
     S4().substr(0, 3) +
     "-" +
     S4() +
-    "-" +
-    S4() +
     S4() +
     S4()
   ).toLowerCase();
+
+
+  server.listen(process.env.PORT || 3000, () => {
+    console.log("Server running on http://localhost:3000");
+  }); 
