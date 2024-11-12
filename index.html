@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic-Tac-Toe Multiplayer</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="gameContainer">
+      <!-- Header Message -->
+      <h2 id="statusMessage">Welcome to Tic-Tac-Toe</h2>
+
+      <!-- Create/Join Game Section -->
+      <div id="setupContainer">
+        <button id="createGameBtn">Create Game</button>
+        <input type="text" id="txtGameId" placeholder="Enter Game code" />
+        <button id="joinGameBtn">Join Game</button>
+        <h3 id="gameCodeDisplay" style="display: none">
+          Game Code: <span id="gameCode"></span>
+        </h3>
+      </div>
+
+      <!-- Tic-Tac-Toe Board -->
+      <div id="gameBoard" style="display: none">
+        <div class="box" id="box1"></div>
+        <div class="box" id="box2"></div>
+        <div class="box" id="box3"></div>
+        <div class="box" id="box4"></div>
+        <div class="box" id="box5"></div>
+        <div class="box" id="box6"></div>
+        <div class="box" id="box7"></div>
+        <div class="box" id="box8"></div>
+        <div class="box" id="box9"></div>
+        <h3 id="winnercodedisplay" style="display: none">
+          Winner : <span id="winner"></span>
+        </h3>
+      </div>
+
+      <!-- New Game Button -->
+      <button id="newGameBtn" style="display: none">New Game</button>
+    </div>
+
+    <script>
+      let ws = new WebSocket("ws://localhost:9090");
+
+      const createbtn = document.getElementById("createGameBtn");
+      const joinbtn = document.getElementById("joinGameBtn");
+      const newGameBtn = document.getElementById("newGameBtn");
+      const txtGameId = document.getElementById("txtGameId");
+      let clienId = null;
+      let gameId = null;
+      document.getElementById('newGameBtn').addEventListener('click', resetGame);
+      createbtn.addEventListener("click", () => {
+        const payLoad = {
+          method: "create",
+          clientId: clientId,
+        };
+
+        ws.send(JSON.stringify(payLoad));
+      });
+      joinbtn.addEventListener("click", () => {
+        let gamecode = txtGameId.value;
+        if (!gamecode) {
+          alert("Enter the game code first!");
+        } else {
+          gameId = gamecode;
+          const payLoad = {
+            method: "join",
+            clientId: clientId,
+            gameId: gamecode,
+          };
+          ws.send(JSON.stringify(payLoad));
+        }
+      });
+
+      for (let i = 1; i <= 9; i++) {
+        const box = document.getElementById("box" + i);
+        box.addEventListener("click", () => {
+          const payLoad = {
+            method: "play",
+            clientId: clientId,
+            gameId: gameId,
+            box: box.id,
+          };
+          ws.send(JSON.stringify(payLoad));
+        });
+      }
+
+      ws.onmessage = (message) => {
+        const response = JSON.parse(message.data);
+        if (response.method === "connect") {
+          clientId = response.clientId;
+          console.log("Client id Set successfully " + clientId);
+        }
+        if (response.method === "create") {
+          gameId = response.game.id;
+          document.getElementById("gameCode").innerText = gameId;
+          document.getElementById("gameCodeDisplay").style.display = "block";
+        }
+
+        if (response.method === "join") {
+          document.getElementById("setupContainer").style.display = "none";
+          document.getElementById("gameBoard").style.display = "grid";
+          document.getElementById("newGameBtn").style.display = "block";
+        }
+
+        if (response.method === "update") {
+          const boxx = response.box;
+          const box = document.getElementById(boxx);
+          const temp = response.symbol;
+          box.textContent = temp;
+          if (checkwinner()) {
+            showwinner(temp);
+          }
+        }
+      };
+
+      function resetGame() {
+        for (let i = 1; i <= 9; i++) {
+          document.getElementById("box" + i).textContent = "";
+        }
+      }
+
+      function showwinner(temp) {
+        document.getElementById("winner").innerText = temp;
+        document.getElementById("winnercodedisplay").style.display = "block";
+      }
+
+      function checkwinner() {
+        const winningCombinations = [
+          ["box1", "box2", "box3"],
+          ["box4", "box5", "box6"],
+          ["box7", "box8", "box9"],
+          ["box1", "box4", "box7"],
+          ["box2", "box5", "box8"],
+          ["box3", "box6", "box9"],
+          ["box1", "box5", "box9"],
+          ["box3", "box5", "box7"],
+        ];
+
+        for (const combination of winningCombinations) {
+          const [a, b, c] = combination;
+          const boxA = document.getElementById(a).textContent;
+          const boxB = document.getElementById(b).textContent;
+          const boxC = document.getElementById(c).textContent;
+          if (boxA && boxA === boxB && boxA === boxC) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+    </script>
+  </body>
+</html>
