@@ -81,13 +81,15 @@
       for (let i = 1; i <= 9; i++) {
         const box = document.getElementById("box" + i);
         box.addEventListener("click", () => {
-          const payLoad = {
+          if(box.innerText===""){
+            const payLoad = {
             method: "play",
             clientId: clientId,
             gameId: gameId,
             box: box.id,
           };
           ws.send(JSON.stringify(payLoad));
+          }
         });
       }
 
